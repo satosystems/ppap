@@ -26,3 +26,26 @@ dependencies {
 test {
     useJUnitPlatform()
 }
+
+task zip(dependsOn: shadowJar) {
+    doLast {
+        def dir = new File("${rootDir}/.work")
+        dir.deleteDir()
+        dir.mkdirs()
+
+        ant {
+           ant.copy file: "build/libs/ppap-${version}-all.jar", tofile: '$dir/ppap.jar', overwrite: true
+        }
+
+        copy {
+            from 'script'
+            include "ppap"
+            into dir
+        }
+
+        exec {
+            workingDir dir
+            commandLine '/usr/bin/zip', '../ppap.zip', 'ppap', 'ppap.jar'
+        }
+    }
+}
