@@ -1,15 +1,24 @@
 plugins {
     id 'java'
+    id 'com.github.johnrengelman.shadow' version '7.1.1'
 }
 
 group 'io.github.satosystems.ppap'
 version '0.1.0'
+
+jar {
+    manifest.mainAttributes('Main-Class': 'io.github.satosystems.ppap.Main')
+}
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
+    implementation 'org.jetbrains:annotations:22.0.0'
+    implementation 'net.lingala.zip4j:zip4j:2.9.1'
+    implementation 'io.vavr:vavr:1.0.0-alpha-3'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
 }
