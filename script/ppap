@@ -2,4 +2,4 @@
 
 CURRENT=$(cd $(dirname $0); pwd)
 
-java -jar $CURRENT/ppap.jar "$@"
+java -jar $CURRENT/ppap-%VERSION%.jar "$@"

@@ -1,10 +1,11 @@
 plugins {
     id 'java'
     id 'com.github.johnrengelman.shadow' version '7.1.1'
+    id 'com.palantir.git-version' version '0.12.3'
 }
 
 group 'io.github.satosystems.ppap'
-version '0.1.0'
+version gitVersion()
 
 jar {
     manifest.mainAttributes('Main-Class': 'io.github.satosystems.ppap.Main')
@@ -34,7 +35,7 @@ task zip(dependsOn: shadowJar) {
         dir.mkdirs()
 
         ant {
-           ant.copy file: "build/libs/ppap-${version}-all.jar", tofile: '$dir/ppap.jar', overwrite: true
+           ant.copy file: "build/libs/ppap-${version}-all.jar", tofile: "${dir}/ppap-${version}.jar", overwrite: true
         }
 
         copy {
@@ -45,7 +46,15 @@ task zip(dependsOn: shadowJar) {
 
         exec {
             workingDir dir
-            commandLine '/usr/bin/zip', '../ppap.zip', 'ppap', 'ppap.jar'
+            commandLine '/usr/bin/sed', '-I', '', "s/%VERSION%/${version}/g", 'ppap'
+        }
+
+        def out = new File("${rootDir}/out")
+        out.mkdirs()
+
+        exec {
+            workingDir dir
+            commandLine '/usr/bin/zip', "${out}/ppap-${version}.zip", 'ppap', "ppap-${version}.jar"
         }
     }
 }
