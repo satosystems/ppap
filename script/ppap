@@ -1,0 +1,5 @@
+#!/bin/sh
+
+CURRENT=$(cd $(dirname $0); pwd)
+
+java -jar $CURRENT/ppap-%VERSION%.jar "$@"
