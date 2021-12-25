@@ -24,7 +24,7 @@ public final class Main {
         if (args.length == 0) {
             return Either.left("Error: no parameters");
         }
-        final var basename = args.length == 1 ? args[0] : "archive";
+        final var basename = args.length == 1 ? new File(args[0]).getName() : "archive";
         final var files = Files.list(Path.of("."))
                 .map(path -> path.getFileName().toString())
                 .filter(path -> path.startsWith(basename))
