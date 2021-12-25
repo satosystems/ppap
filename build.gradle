@@ -29,7 +29,7 @@ test {
     useJUnitPlatform()
 }
 
-task zip(dependsOn: shadowJar) {
+task tar(dependsOn: shadowJar) {
     doLast {
         def dir = new File("${rootDir}/.work")
         dir.deleteDir()
@@ -55,7 +55,7 @@ task zip(dependsOn: shadowJar) {
 
         exec {
             workingDir dir
-            commandLine '/usr/bin/zip', "${out}/ppap-${version}.zip", 'ppap', "ppap-${version}.jar"
+            commandLine '/usr/bin/tar', "cfz", "${out}/ppap-${version}.tar.gz", 'ppap', "ppap-${version}.jar"
         }
     }
 }
