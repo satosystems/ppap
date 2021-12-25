@@ -82,6 +82,18 @@ public final class Main {
     }
 
     @NotNull
+    private static Either<String, String> readProperty(@NotNull String key, @NotNull String defaultValue) throws IOException {
+        final var config = new File(System.getenv("HOME"), ".ppaprc");
+        if (!config.isFile()) {
+            return Either.left(defaultValue);
+        }
+        final var props = new Properties();
+        props.load(Files.newBufferedReader(Paths.get(config.toURI())));
+        final var value = props.getProperty(key);
+        return value == null ? Either.left(defaultValue) : Either.right(value);
+    }
+
+    @NotNull
     private static Either<String, String> readPassword(final boolean needPassword) throws IOException {
         if (needPassword) {
             final var console = System.console();
@@ -98,13 +110,7 @@ public final class Main {
                 }
             }
         }
-        final var config = new File(System.getenv("HOME"), ".ppaprc");
-        if (!config.isFile()) {
-            return Either.left(makeRandomPassword());
-        }
-        final var props = new Properties();
-        props.load(Files.newBufferedReader(Paths.get(config.toURI())));
-        return Either.right(props.getProperty("password"));
+        return readProperty("password", makeRandomPassword());
     }
 
     @NotNull
@@ -146,6 +152,12 @@ public final class Main {
                 .replaceAll("\\.jar", "");
     }
 
+    @NotNull
+    private static String readCharset() throws IOException {
+        final var charset = readProperty("charset", "windows-31j");
+        return charset.isRight() ? charset.get() : charset.getLeft();
+    }
+
     public static void main(@NotNull final String... args) throws IOException, URISyntaxException {
         final var commandLinePair = parseCommandLine(args);
         final var options = commandLinePair.getRight();
@@ -185,7 +197,7 @@ public final class Main {
         final var password = eitherPassword.isLeft() ? eitherPassword.getLeft() : eitherPassword.get();
 
         final var zipFile = new ZipFile(archiveFileName);
-        zipFile.setCharset(Charset.forName("windows-31j"));
+        zipFile.setCharset(Charset.forName(readCharset()));
         zipFile.setPassword(password.toCharArray());
         if (!pairs.getLeft().isEmpty()) {
             zipFile.addFiles(pairs.getLeft(), params);
