@@ -167,7 +167,7 @@ public final class Main {
 
         final var notExistsOrFiles = checkNotExists(commandLine);
         if (notExistsOrFiles.isLeft()) {
-            System.err.println("Error: not found: " + notExistsOrFiles.getLeft());
+            System.err.println("Error: Not found " + notExistsOrFiles.getLeft());
             System.exit(-1);
         }
         final var pairs = notExistsOrFiles.get();
