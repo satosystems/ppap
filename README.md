@@ -17,7 +17,21 @@ Targeted at Mac users.
 
 Since this program is written in Java, please prepare the Java execution environment in any way you wish.
 
-Extract the [latest of ppap-&lt;version&gt;.zip](https://github.com/satosystems/ppap/releases) and save it to a location with your PATH.
+### 🍺 Install via Homebrew (Recommended)
+
+```shell-session
+$ brew install satosystems/tap/ppap
+...
+$
+```
+
+### 🍳 Install via self build
+
+Show [Developing](#-developing).
+
+### Install via GitHub.
+
+Extract the [latest of ppap-&lt;version&gt;.tar.gz](https://github.com/satosystems/ppap/releases) and save it to a location with your PATH.
 
 ## 🤔 Usage
 
@@ -37,6 +51,10 @@ $ ppap foo bar
 $ ppap foo bar
 Created: archive.zip
 Password is: LYVzE!~EY5]l?t.2
+$ ppap -p bar
+Enter password:
+Verify password:
+Created: bar.zip
 $ echo password=foobar > ~/.ppaprc
 $ echo ~/.ppaprc
 password=foobar
@@ -45,11 +63,32 @@ Created: foo.2.zip
 $ unzip -t foo.2.zip
 $ unzip -t foo.2.zip
 Archive:  foo.2.zip
-[foo.2.zip] foo password: # input `foobar'
+[foo.2.zip] foo password:
     testing: foo                      OK
 No errors detected in compressed data of foo.2.zip.
+$ ppap -v
+v1.1.1
+$ ppap -h
+usage: ppap [-h] [-p] [-v] [FILES/DIRS]
+
+This is a CLI program that creates a ZIP file with a password.
+ -h,--help       Show this help.
+ -p,--password   Input password interactively.
+ -v,--version    Show version.
+
+Please report issues at https://github.com/satosystems/ppap/issues
 $
 ```
+
+## ⚙️ .ppaprc
+
+```properties
+charset=utf-8
+password=foobar
+```
+
+- charset: Character set name of ZIP entry. Optional. Default value is `windows-31j`. Do not set it If you are not sure.
+- password: ZIP password you always use. Optional.
 
 ## 😀 Contributing
 
@@ -66,12 +105,12 @@ To begin developing, do this:
 ```shell-session
 $ git clone git@github.com:satosystems/ppap.git
 $ cd ppap
-$ ./gradlew zip
+$ ./gradlew tar
 ...
 $ ls .work # created script and jar file
-ppap			ppap-v1.0.0.jar
-$ ls out $ created zip file for release
-ppap-v1.0.0.zip
+ppap			ppap-v1.1.1.jar
+$ ls out # created zip file for release
+ppap-v1.1.1.tar.gz
 $
 ```
 
