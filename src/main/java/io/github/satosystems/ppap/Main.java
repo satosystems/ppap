@@ -27,6 +27,11 @@ import java.util.Properties;
 import java.util.Random;
 
 public final class Main {
+    private static final String ANSI_RESET = "\u001B[0m";
+    private static final String ANSI_RED = "\u001B[31m";
+    private static final String ANSI_PURPLE = "\u001B[35m";
+    private static final String ANSI_GREEN = "\u001B[32m";
+
     @NotNull
     private static Either<String, String> resolveArchiveFileName(@NotNull final CommandLine commandLine) throws IOException {
         final var args = commandLine.getArgs();
@@ -81,7 +86,7 @@ public final class Main {
         if (needPassword) {
             final var console = System.console();
             if (console == null) {
-                System.err.println("Warning: No console available. You cannot input password.");
+                System.err.println(ANSI_PURPLE + "Warning: No console available. You cannot input password." + ANSI_RESET);
             } else {
                 while (true) {
                     final var password = new String(console.readPassword("Enter password: "));
@@ -89,7 +94,7 @@ public final class Main {
                     if (password.equals(passwordVerify)) {
                         return Either.right(password);
                     }
-                    System.err.print("Wrong password. ");
+                    System.err.println(ANSI_RED + "Wrong password. " + ANSI_RESET);
                 }
             }
         }
@@ -160,14 +165,14 @@ public final class Main {
 
         final var archiveFileNameOrError = resolveArchiveFileName(commandLine);
         if (archiveFileNameOrError.isLeft()) {
-            System.err.println(archiveFileNameOrError.getLeft());
+            System.out.println(ANSI_RED + archiveFileNameOrError.getLeft() + ANSI_RESET);
             System.exit(-1);
         }
         final var archiveFileName = archiveFileNameOrError.get();
 
         final var notExistsOrFiles = checkNotExists(commandLine);
         if (notExistsOrFiles.isLeft()) {
-            System.err.println("Error: Not found " + notExistsOrFiles.getLeft());
+            System.out.println(ANSI_RED + "Error: Not found \"" + notExistsOrFiles.getLeft() + "\"" + ANSI_RESET);
             System.exit(-1);
         }
         final var pairs = notExistsOrFiles.get();
@@ -188,9 +193,9 @@ public final class Main {
         for (final var dir : pairs.getRight()) {
             zipFile.addFolder(dir, params);
         }
-        System.out.println("Created: " + archiveFileName);
+        System.out.println("Created: " + ANSI_GREEN + archiveFileName + ANSI_RESET);
         if (eitherPassword.isLeft()) {
-            System.out.println("Password is: " + password);
+            System.out.println("Password is: " + ANSI_GREEN + password + ANSI_RESET);
         }
     }
 }
