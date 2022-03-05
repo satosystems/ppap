@@ -36,7 +36,7 @@ task tar(dependsOn: shadowJar) {
         dir.mkdirs()
 
         ant {
-           ant.copy file: "build/libs/ppap-${version}-all.jar", tofile: "${dir}/ppap-${version}.jar", overwrite: true
+            ant.copy file: "build/libs/ppap-${version}-all.jar", tofile: "${dir}/ppap-${version}.jar", overwrite: true
         }
 
         copy {
