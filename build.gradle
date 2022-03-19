@@ -16,7 +16,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.jetbrains:annotations:22.0.0'
+    implementation 'org.jetbrains:annotations:23.0.0'
     implementation 'net.lingala.zip4j:zip4j:2.9.1'
     implementation 'io.vavr:vavr:1.0.0-alpha-3'
     implementation 'org.apache.commons:commons-lang3:3.12.0'
