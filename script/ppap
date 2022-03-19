@@ -7,6 +7,8 @@ else
   CELLAR=/opt/homebrew/Cellar
 fi
 
-JAR=$CELLAR/ppap/%VERSION%/libexec/ppap-%VERSION%.jar
+LIBEXEC=$CELLAR/ppap/%VERSION%/libexec
+JAR=$LIBEXEC/ppap-%VERSION%.jar
+JAVA=$LIBEXEC/jre/bin/java
 
-java -jar $JAR "$@"
+$JAVA -jar $JAR "$@"

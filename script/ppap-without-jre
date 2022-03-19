@@ -1,0 +1,12 @@
+#!/bin/sh
+
+if [ "$(uname -m)" = "x86_64" ]
+then
+  CELLAR=/usr/local/Cellar
+else
+  CELLAR=/opt/homebrew/Cellar
+fi
+
+JAR=$CELLAR/ppap-without-jre/%VERSION%/libexec/ppap-%VERSION%.jar
+
+java -jar $JAR "$@"

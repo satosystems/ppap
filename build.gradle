@@ -37,6 +37,25 @@ task tar(dependsOn: shadowJar) {
 
         ant {
             ant.copy file: "build/libs/ppap-${version}-all.jar", tofile: "${dir}/ppap-${version}.jar", overwrite: true
+            ant.copy file: "script/ppap-without-jre", tofile: "${dir}/ppap", overwrite: true
+        }
+
+        exec {
+            workingDir dir
+            commandLine '/usr/bin/sed', '-I', '', "s/%VERSION%/${version}/g", 'ppap'
+        }
+
+        exec {
+            workingDir dir
+            commandLine '/usr/bin/sed', '-I', '', 's|/v\\(.*\\)/|/\\1/|', 'ppap'
+        }
+
+        def out = new File("${rootDir}/out")
+        out.mkdirs()
+
+        exec {
+            workingDir dir
+            commandLine '/usr/bin/tar', "cfz", "${out}/ppap-without-jre-${version}.tar.gz", 'ppap', "ppap-${version}.jar"
         }
 
         copy {
@@ -55,12 +74,14 @@ task tar(dependsOn: shadowJar) {
             commandLine '/usr/bin/sed', '-I', '', 's|/v\\(.*\\)/|/\\1/|', 'ppap'
         }
 
-        def out = new File("${rootDir}/out")
-        out.mkdirs()
+        exec {
+            workingDir dir
+            commandLine "${rootDir}/script/build.sh", "${version}"
+        }
 
         exec {
             workingDir dir
-            commandLine '/usr/bin/tar', "cfz", "${out}/ppap-${version}.tar.gz", 'ppap', "ppap-${version}.jar"
+            commandLine '/usr/bin/tar', "cfz", "${out}/ppap-${version}.tar.gz", 'ppap', "ppap-${version}.jar", "jre"
         }
     }
 }
