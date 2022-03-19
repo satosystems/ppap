@@ -85,10 +85,12 @@ $
 ```properties
 charset=utf-8
 password=foobar
+ignore=^(\.DS_Store|\..+\.swp)$
 ```
 
 - charset: Character set name of ZIP entry. Optional. Default value is `windows-31j`. Do not set it If you are not sure.
 - password: ZIP password you always use. Optional.
+- ignore: The name of the file you want to ignore, using a regular expression. If there is more than one file name, use a regular expression to represent more than one file name. Optional.
 
 ## 😀 Contributing
 

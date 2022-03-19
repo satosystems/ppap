@@ -11,6 +11,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 public final class Main {
     private static final String ANSI_RESET = "\u001B[0m";
@@ -158,6 +160,33 @@ public final class Main {
         return charset.isRight() ? charset.get() : charset.getLeft();
     }
 
+    @NotNull
+    private static Optional<Pattern> readIgnore() throws IOException {
+        final var ignore = readProperty("ignore", "");
+        return ignore.isRight() ? Optional.of(Pattern.compile(ignore.get())) : Optional.empty();
+    }
+
+    private static void addFilesRecursive(@NotNull ZipFile zipFile, @NotNull ZipParameters params, @Nullable Pattern ignore, @NotNull Pair<List<File>, List<File>> pairs) throws IOException {
+        if (!pairs.getLeft().isEmpty()) {
+            final var files = pairs.getLeft();
+            final var filtered = ignore == null ? files : files.stream().filter(file -> !ignore.matcher(file.getName()).matches()).toList();
+            zipFile.addFiles(filtered, params);
+        }
+        for (final var dir : pairs.getRight()) {
+            if (ignore != null && ignore.matcher(dir.getName()).matches()) {
+                continue;
+            }
+            final var pairsOfDir = Files.list(Path.of(dir.toURI()))
+                    .map(Path::toFile)
+                    .reduce(Pair.of((List<File>) new ArrayList<File>(), (List<File>) new ArrayList<File>()), (acc, cur) -> {
+                final var list = cur.isFile() ? acc.getLeft() : acc.getRight();
+                list.add(cur);
+                return acc;
+            }, (acc, cur) -> acc);
+            addFilesRecursive(zipFile, params, ignore, pairsOfDir);
+        }
+    }
+
     public static void main(@NotNull final String... args) throws IOException, URISyntaxException {
         final var commandLinePair = parseCommandLine(args);
         final var options = commandLinePair.getRight();
@@ -195,16 +224,12 @@ public final class Main {
 
         final var eitherPassword = readPassword(commandLine.hasOption("p"));
         final var password = eitherPassword.isLeft() ? eitherPassword.getLeft() : eitherPassword.get();
+        final var ignore = readIgnore();
 
         final var zipFile = new ZipFile(archiveFileName);
         zipFile.setCharset(Charset.forName(readCharset()));
         zipFile.setPassword(password.toCharArray());
-        if (!pairs.getLeft().isEmpty()) {
-            zipFile.addFiles(pairs.getLeft(), params);
-        }
-        for (final var dir : pairs.getRight()) {
-            zipFile.addFolder(dir, params);
-        }
+        addFilesRecursive(zipFile, params, ignore.isEmpty() ? null : ignore.get(),pairs);
         System.out.println("Created: " + ANSI_GREEN + archiveFileName + ANSI_RESET);
         if (eitherPassword.isLeft()) {
             System.out.println("Password is: " + ANSI_GREEN + password + ANSI_RESET);
