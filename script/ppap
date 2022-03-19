@@ -1,5 +1,12 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-CURRENT=$(cd $(dirname $0); pwd)
+if [ "$(uname -m)" = "x86_64" ]
+then
+  CELLAR=/usr/local/Cellar
+else
+  CELLAR=/opt/homebrew/Cellar
+fi
 
-java -jar $CURRENT/ppap-%VERSION%.jar "$@"
+JAR=$CELLAR/ppap/%VERSION%/libexec/ppap-%VERSION%.jar
+
+java -jar $JAR "$@"

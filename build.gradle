@@ -50,6 +50,11 @@ task tar(dependsOn: shadowJar) {
             commandLine '/usr/bin/sed', '-I', '', "s/%VERSION%/${version}/g", 'ppap'
         }
 
+        exec {
+            workingDir dir
+            commandLine '/usr/bin/sed', '-I', '', 's|/v\\(.*\\)/|/\\1/|', 'ppap'
+        }
+
         def out = new File("${rootDir}/out")
         out.mkdirs()
 
